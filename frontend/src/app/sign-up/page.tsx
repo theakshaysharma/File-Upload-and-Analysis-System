@@ -64,7 +64,9 @@ export default function SignUpPage() {
       if (error.response?.status === 400) {
         setUser((prev) => ({ ...prev, password: '', username: '', email: '' })); // Clear fields
         setTouched({ password: false, email: false });
-        setFormError(error.response.data?.message || 'An error occurred during signup.');
+        setFormError(
+          error.response.data?.message || 'An error occurred during signup.',
+        );
       } else {
         setFormError('Unexpected error occurred. Please try again later.');
         console.log('Failed to sign up the user', error.message);
@@ -77,7 +79,15 @@ export default function SignUpPage() {
   // Validate inputs and set button state
   useEffect(() => {
     const { email, password } = user;
-    setButtonDisabled(!(user.username && user.firstName && user.lastName && validateEmail(email) && validatePassword(password)));
+    setButtonDisabled(
+      !(
+        user.username &&
+        user.firstName &&
+        user.lastName &&
+        validateEmail(email) &&
+        validatePassword(password)
+      ),
+    );
     setErrors({
       email: validateEmail(user.email) ? '' : 'Invalid email address',
       password: validatePassword(user.password)
@@ -142,7 +152,9 @@ export default function SignUpPage() {
 
         <input
           className={`w-full text-black p-3 border ${
-            touched.password && errors.password ? 'border-red-600' : 'border-gray-600'
+            touched.password && errors.password
+              ? 'border-red-600'
+              : 'border-gray-600'
           } rounded-lg mb-4 focus:outline-none focus:border-gray-400`}
           id="password"
           type="password"
@@ -158,8 +170,11 @@ export default function SignUpPage() {
           onClick={onSignUp}
           disabled={buttonDisabled}
           className={`w-full p-3 border border-gray-600 rounded-lg focus:outline-none focus:border-gray-400 uppercase font-bold ${
-            buttonDisabled ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-700 hover:bg-blue-800'
-          } transition duration-300`}>
+            buttonDisabled
+              ? 'bg-gray-600 cursor-not-allowed'
+              : 'bg-blue-700 hover:bg-blue-800'
+          } transition duration-300`}
+        >
           {buttonDisabled ? 'Sign Up' : 'Register My Account Now'}
         </button>
 

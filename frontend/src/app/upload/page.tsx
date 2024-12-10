@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaAngleLeft } from 'react-icons/fa6';
 import { uploadFiles } from '../api/api';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 
 export default function UploadPage() {
   const router = useRouter();
@@ -12,7 +13,21 @@ export default function UploadPage() {
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
 
-  const allowedTypes = ['image/*', 'application/pdf', 'application/vnd.ms-excel', 'text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+  useEffect(() => {
+    // Check if the user is logged in
+    const token = Cookies.get('accessToken');
+    if (!token) {
+      router.push('/'); // Redirect to homepage if no token is found
+    }
+  }, []);
+
+  const allowedTypes = [
+    'image/*',
+    'application/pdf',
+    'application/vnd.ms-excel',
+    'text/csv',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ];
 
   const validateFiles = (selectedFiles: File[]) => {
     return selectedFiles.filter((file) => {
@@ -21,7 +36,9 @@ export default function UploadPage() {
 
       // Check by MIME type or file extension
       return allowedTypes.some((type) =>
-        type.includes('/') ? fileType.startsWith(type.split('/')[0]) : fileExtension === type.replace('.', '')
+        type.includes('/')
+          ? fileType.startsWith(type.split('/')[0])
+          : fileExtension === type.replace('.', ''),
       );
     });
   };
@@ -78,13 +95,13 @@ export default function UploadPage() {
           onDragOver={handleDragOver}
         >
           <label className="text-gray-400 text-center block cursor-pointer">
-            {files.length ? (
-              files.map((file, index) => (
-                <li key={index} className="truncate">{file.name}</li>
-              ))
-            ) : (
-              'Drag and drop files here, or click to select files'
-            )}
+            {files.length
+              ? files.map((file, index) => (
+                  <li key={index} className="truncate">
+                    {file.name}
+                  </li>
+                ))
+              : 'Drag and drop files here, or click to select files'}
             <input
               type="file"
               onChange={handleFileChange}
@@ -108,7 +125,9 @@ export default function UploadPage() {
           onClick={uploadFilesHandler}
           disabled={buttonDisabled || isUploading}
           className={`w-full p-3 border border-gray-600 rounded-lg focus:outline-none focus:border-gray-400 ${
-            buttonDisabled || isUploading ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-700 hover:bg-blue-800'
+            buttonDisabled || isUploading
+              ? 'bg-gray-600 cursor-not-allowed'
+              : 'bg-blue-700 hover:bg-blue-800'
           } transition duration-300`}
         >
           {isUploading ? 'Uploading...' : 'Upload'}

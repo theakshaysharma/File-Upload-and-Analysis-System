@@ -1,6 +1,6 @@
 // src/api/api.ts
 
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const BASE_URL = process.env.API_BASE_URL || 'http://localhost:9000/v1';
@@ -9,20 +9,26 @@ const api = axios.create({
   baseURL: BASE_URL,
 });
 
-
 const commonHeaders = () => {
   const token = Cookies.get('accessToken');
+  
   return {
     Accept: 'application/json',
     'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
+    ...(token && { Authorization: `Bearer ${token}` }), 
   };
 };
 
 export const apiRequest = async (method: string, url: string, data: any = null) => {
   try {
-    const headers = data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : commonHeaders();
-    
+    const token = Cookies.get('accessToken');
+    const headers = {
+      ...(data instanceof FormData
+        ? { 'Content-Type': 'multipart/form-data' }
+        : commonHeaders()),
+      ...(token && { Authorization: `Bearer ${token}` }), 
+    };
+
     const response = await api({
       method,
       url,
@@ -36,11 +42,19 @@ export const apiRequest = async (method: string, url: string, data: any = null) 
   }
 };
 
-export const login = async (credentials: { userIdentifier: string; password: string }) => {
+
+export const login = async (credentials: {
+  userIdentifier: string;
+  password: string;
+}) => {
   return await apiRequest('POST', '/auth/login', credentials);
 };
 
-export const register = async (userData: { username: string; email: string; password: string }) => {
+export const register = async (userData: {
+  username: string;
+  email: string;
+  password: string;
+}) => {
   return await apiRequest('POST', '/auth/register', userData);
 };
 
@@ -54,5 +68,5 @@ export const uploadFiles = async (formData: FormData) => {
 };
 
 export const getUserProfile = async () => {
-  return await apiRequest('GET', '/auth/profile');
+  return await apiRequest('GET', '/user/profile');
 };

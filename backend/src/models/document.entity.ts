@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 
 export enum DocumentStatus {
@@ -23,7 +29,7 @@ export class Document {
   filePath: string;
 
   @Column({
-    type: 'text', // Change from enum to text
+    type: 'text',
     default: DocumentStatus.PENDING,
   })
   status: DocumentStatus;
@@ -34,6 +40,10 @@ export class Document {
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @ManyToOne(() => User, (user) => user.documents, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.documents, { eager: false })
+  @JoinColumn({ name: 'userId' })
   user: User;
+
+  @Column()
+  userId: string;
 }

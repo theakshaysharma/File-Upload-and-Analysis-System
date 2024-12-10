@@ -4,13 +4,13 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUserProfile } from '../api/api';
-import { FaUpload, FaAngleLeft } from 'react-icons/fa6';
+import { FaUpload } from 'react-icons/fa6';
 import Cookies from 'js-cookie';
 
 export default function ProfilePage() {
   const router = useRouter();
   const [username, setUsername] = useState('');
-  const  [firstName, setFirstName] = useState('');
+  const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,29 +18,36 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        // Check if the token exists
         const token = Cookies.get('accessToken');
         if (!token) {
           throw new Error('No token found');
         }
 
-        const response = await getUserProfile(); 
-        if (response.status === 200) {
-          setFirstName(response.data.firstName);
-          setLastName(response.data.lastName);
-          setUsername(response.data.username);
-          // setDocuments(response.documents);
+        const response = await getUserProfile();
+        console.log('Profile API Response:', response);
+
+        if (response.status === 'success') {
+          const userData = response.data;
+          setFirstName(userData.firstName); // Accessing firstName from the correct path
+          setLastName(userData.lastName);
+          setUsername(userData.username);
+          // Handle documents safely, if applicable in your case
+          setDocuments(userData.documents || []);
         } else {
           throw new Error('Failed to fetch profile data');
         }
-      } catch (error) {
-        console.error('Error fetching profile data', error);
-        // Clear the access token cookie
-        Cookies.remove('accessToken');
-        // Redirect to login page
-        router.push('/login');
+      } catch (error: any) {
+        console.error('Error fetching profile data:', error);
+
+        if (
+          error.response?.status === 401 ||
+          error.message === 'No token found'
+        ) {
+          Cookies.remove('accessToken');
+          router.push('/');
+        }
       } finally {
-        setLoading(false); // Only set loading to false if data is fetched successfully
+        setLoading(false); // Ensure loading is set to false
       }
     };
 

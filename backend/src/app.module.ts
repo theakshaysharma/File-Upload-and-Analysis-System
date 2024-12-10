@@ -7,6 +7,7 @@ import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './files/files.module';
 import { AppConfigService } from './config/app-config.service';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -18,13 +19,14 @@ import { AppConfigService } from './config/app-config.service';
       type: 'sqlite',
       database: './database.sqlite',
       entities: [User, Document],
-      synchronize: true, 
-      logging: false, 
+      synchronize: true,
+      logging: false,
     }),
-    TypeOrmModule.forFeature([Document,User]),
+    TypeOrmModule.forFeature([Document, User]),
     HealthModule,
     AuthModule,
     FilesModule,
+    UserModule,
   ],
   providers: [AppConfigService],
   exports: [AppConfigService],

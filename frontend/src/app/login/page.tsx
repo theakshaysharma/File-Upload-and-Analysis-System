@@ -11,7 +11,10 @@ import Cookies from 'js-cookie';
 export default function LoginPage() {
   const router = useRouter();
 
-  const [user, setUser] = React.useState<UserCredentials>({ userIdentifier: '', password: '' });
+  const [user, setUser] = React.useState<UserCredentials>({
+    userIdentifier: '',
+    password: '',
+  });
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
 
@@ -22,7 +25,10 @@ export default function LoginPage() {
       console.log('Login successful', response);
 
       // Store token in cookies
-      Cookies.set('accessToken', response.data.accessToken, { expires: 7, secure: true });
+      Cookies.set('accessToken', response.data.accessToken, {
+        expires: 7,
+        secure: true,
+      });
 
       router.push('/profile');
     } catch (error: any) {
@@ -68,7 +74,9 @@ export default function LoginPage() {
         <Link href="/sign-up">
           <p className="mt-4 text-center text-gray-400">
             Don't have an account yet?{' '}
-            <span className="text-green-500 font-bold cursor-pointer underline">Register now</span>
+            <span className="text-green-500 font-bold cursor-pointer underline">
+              Register now
+            </span>
           </p>
         </Link>
         <Link href="/">
