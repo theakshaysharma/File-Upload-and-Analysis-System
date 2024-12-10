@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaAngleLeft } from 'react-icons/fa6';
-import { uploadFiles } from '../api/api'; 
+import { uploadFiles } from '../api/api';
 import Link from 'next/link';
 
 export default function UploadPage() {
@@ -12,13 +12,16 @@ export default function UploadPage() {
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
 
-  const allowedTypes = ['image/*', '.xlsx', '.xls', '.csv', '.pdf'];
+  const allowedTypes = ['image/*', 'application/pdf', 'application/vnd.ms-excel', 'text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
 
   const validateFiles = (selectedFiles: File[]) => {
     return selectedFiles.filter((file) => {
-      const fileType = file.type || file.name.split('.').pop()?.toLowerCase();
+      const fileType = file.type;
+      const fileExtension = file.name.split('.').pop()?.toLowerCase();
+
+      // Check by MIME type or file extension
       return allowedTypes.some((type) =>
-        type.includes('/') ? file.type.startsWith(type.split('/')[0]) : fileType === type.replace('.', '')
+        type.includes('/') ? fileType.startsWith(type.split('/')[0]) : fileExtension === type.replace('.', '')
       );
     });
   };
@@ -52,15 +55,15 @@ export default function UploadPage() {
     setIsUploading(true);
 
     try {
-      // Create FormData and append each file separately
       const formData = new FormData();
       files.forEach((file) => formData.append('files', file)); // Correct key 'files'
 
-      await uploadFiles(formData); // Use the uploadFiles function from api.ts
+      await uploadFiles(formData); // API call to upload files
       router.push('/profile');
     } catch (error) {
       console.error('Error uploading files', error);
-      setIsUploading(false); // Reset the uploading state in case of an error
+    } finally {
+      setIsUploading(false); // Reset the uploading state
     }
   };
 
@@ -86,9 +89,9 @@ export default function UploadPage() {
               type="file"
               onChange={handleFileChange}
               multiple
-              accept="image/*, .xlsx, .xls, .csv, .pdf"
+              accept={allowedTypes.join(',')}
               className="hidden"
-              onClick={(e: any) => (e.target.value = null)} // reset value to null for file input
+              onClick={(e: any) => (e.target.value = null)} // Reset file input
             />
           </label>
         </div>

@@ -1,12 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Document } from './document.entity';
 
-export enum UserRole {
-  ADMIN = 'admin',
-  NORMAL = 'normal',
-  OWNER = 'owner',
-}
-
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -21,12 +15,14 @@ export class User {
   @Column()
   password: string;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.NORMAL,
-  })
-  role: UserRole;
+  @Column({ type: 'text', default: 'normal' }) // Default role set to 'normal'
+  role: string;
+
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
 
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

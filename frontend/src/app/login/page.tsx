@@ -20,10 +20,10 @@ export default function LoginPage() {
       setLoading(true);
       const response = await login(user); // Assuming login API returns { accessToken }
       console.log('Login successful', response);
-  
+
       // Store token in cookies
-      Cookies.set('accessToken', response.accessToken, { expires: 7, secure: true });
-  
+      Cookies.set('accessToken', response.data.accessToken, { expires: 7, secure: true });
+
       router.push('/profile');
     } catch (error: any) {
       console.log('Login failed', error.message);
@@ -79,4 +79,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-};
+}

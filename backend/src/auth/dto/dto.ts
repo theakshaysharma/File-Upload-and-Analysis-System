@@ -13,6 +13,13 @@ export class LoginDto {
 export class RegisterDto {
   @IsString()
   @IsNotEmpty()
+  firstName: string;
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+  
+  @IsString()
+  @IsNotEmpty()
   username: string;
 
   @IsEmail()
@@ -29,5 +36,8 @@ export class UserResponseDto {
     id: number;
     username: string;
     email: string;
+    firstName?:string;
+    lastName?:string
+    accessToken?:string
   }
   

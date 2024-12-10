@@ -12,6 +12,8 @@ export default function SignUpPage() {
 
   // User state
   const [user, setUser] = useState({
+    firstName: '',
+    lastName: '',
     username: '',
     email: '',
     password: '',
@@ -60,8 +62,8 @@ export default function SignUpPage() {
     } catch (error: any) {
       setLoading(false);
       if (error.response?.status === 400) {
-        setUser((prev) => ({ ...prev, password: '',username:'',email:'' })); // Clear password field
-		setTouched({ password:false, email: false });
+        setUser((prev) => ({ ...prev, password: '', username: '', email: '' })); // Clear fields
+        setTouched({ password: false, email: false });
         setFormError(error.response.data?.message || 'An error occurred during signup.');
       } else {
         setFormError('Unexpected error occurred. Please try again later.');
@@ -75,7 +77,7 @@ export default function SignUpPage() {
   // Validate inputs and set button state
   useEffect(() => {
     const { email, password } = user;
-    setButtonDisabled(!(user.username && validateEmail(email) && validatePassword(password)));
+    setButtonDisabled(!(user.username && user.firstName && user.lastName && validateEmail(email) && validatePassword(password)));
     setErrors({
       email: validateEmail(user.email) ? '' : 'Invalid email address',
       password: validatePassword(user.password)
@@ -97,6 +99,24 @@ export default function SignUpPage() {
       </h1>
 
       <div className="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
+        <input
+          className="w-full text-black p-3 border border-gray-600 rounded-lg mb-4 focus:outline-none focus:border-gray-400"
+          id="firstName"
+          type="text"
+          value={user.firstName}
+          onChange={(e) => handleInputChange('firstName', e.target.value)}
+          placeholder="Your First Name..."
+        />
+
+        <input
+          className="w-full text-black p-3 border border-gray-600 rounded-lg mb-4 focus:outline-none focus:border-gray-400"
+          id="lastName"
+          type="text"
+          value={user.lastName}
+          onChange={(e) => handleInputChange('lastName', e.target.value)}
+          placeholder="Your Last Name..."
+        />
+
         <input
           className="w-full text-black p-3 border border-gray-600 rounded-lg mb-4 focus:outline-none focus:border-gray-400"
           id="username"

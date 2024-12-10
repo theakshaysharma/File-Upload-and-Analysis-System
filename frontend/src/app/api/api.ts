@@ -1,6 +1,7 @@
 // src/api/api.ts
 
-import axios from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import Cookies from 'js-cookie';
 
 const BASE_URL = process.env.API_BASE_URL || 'http://localhost:9000/v1';
 
@@ -8,9 +9,19 @@ const api = axios.create({
   baseURL: BASE_URL,
 });
 
+
+const commonHeaders = () => {
+  const token = Cookies.get('accessToken');
+  return {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+};
+
 export const apiRequest = async (method: string, url: string, data: any = null) => {
   try {
-    const headers = data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' };
+    const headers = data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : commonHeaders();
     
     const response = await api({
       method,
@@ -40,4 +51,8 @@ export const uploadFiles = async (formData: FormData) => {
     console.error('Error uploading files:', error);
     throw error;
   }
+};
+
+export const getUserProfile = async () => {
+  return await apiRequest('GET', '/auth/profile');
 };

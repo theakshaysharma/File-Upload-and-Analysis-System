@@ -56,8 +56,8 @@ async function bootstrap() {
 
   // Set up Swagger for API documentation
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Central - Justcall')
-    .setDescription('Core APIs for Justcall Central')
+    .setTitle('File Upload and Analysis System')
+    .setDescription('API to Login, Sign-Up and Edit Users and Upload files')
     .setVersion('1.0')
     .addTag('Central')
     .build();

@@ -15,11 +15,13 @@ import { AppConfigService } from './config/app-config.service';
       envFilePath: '.env',
     }),
     TypeOrmModule.forRoot({
-      type: 'sqlite', // Type of database
-      database: './database.sqlite', // Path to the SQLite file
-      synchronize: false, // Disable schema synchronization in production
-      logging: false, // Disable logging in production
-      }),
+      type: 'sqlite',
+      database: './database.sqlite',
+      entities: [User, Document],
+      synchronize: true, 
+      logging: false, 
+    }),
+    TypeOrmModule.forFeature([Document,User]),
     HealthModule,
     AuthModule,
     FilesModule,

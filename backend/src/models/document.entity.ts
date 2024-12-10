@@ -23,8 +23,7 @@ export class Document {
   filePath: string;
 
   @Column({
-    type: 'enum',
-    enum: DocumentStatus,
+    type: 'text', // Change from enum to text
     default: DocumentStatus.PENDING,
   })
   status: DocumentStatus;
