@@ -2,25 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Document, DocumentStatus } from 'src/models/document.entity';
 import { Repository } from 'typeorm';
-import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class FileService {
   constructor(
     @InjectRepository(Document)
     private fileRepository: Repository<Document>,
-    private readonly userService: UserService,
   ) {}
 
   async uploadFiles(
     files: Express.Multer.File[],
-    userId: string,
+    userId: string, // UserId is sent directly
   ): Promise<any> {
     const fileDataPromises = files.map(async (file) => {
       const newFile = this.fileRepository.create({
         fileName: file.originalname,
         fileType: file.mimetype,
-        filePath: `uploads/${file.filename}`,
+        filePath: `uploads/${file.filename ?? file.originalname}`,
         status: DocumentStatus.PENDING,
         userId, // Assign the userId directly
       });
@@ -46,15 +44,9 @@ export class FileService {
   async getFileDetails(id: number): Promise<Document> {
     const document = await this.fileRepository.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user'], // Assuming `user` is a relation in the `Document` entity
     });
 
     return document;
-  }
-
-  verifyTokenAndExtractUserId(token: string): string | null {
-    const payload = this.userService.verifyToken(token);
-    console.log('payload what', payload)
-    return payload?.sub || null;
   }
 }

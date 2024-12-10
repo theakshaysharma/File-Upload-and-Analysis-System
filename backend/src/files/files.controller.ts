@@ -7,13 +7,14 @@ import {
   Query,
   ParseIntPipe,
   UseInterceptors,
-  Headers,
-  HttpException,
-  HttpStatus,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { FileService } from './files.service';
+import { JwtAuthGuard } from 'src/guards/jwt.guards';
 
+@UseGuards(JwtAuthGuard)
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
@@ -22,41 +23,21 @@ export class FileController {
   @UseInterceptors(FileFieldsInterceptor([{ name: 'files', maxCount: 10 }]))
   async uploadFiles(
     @UploadedFiles() files: { files: Express.Multer.File[] },
-    @Headers('authorization') authorizationHeader: string,
+    @Req() req: any, // `req.user` is populated by the guard
   ) {
-    console.log('Authorization Header:', authorizationHeader); // Log the header to check if it's coming in the request
-
-    if (!authorizationHeader) {
-      console.error('Access token not found'); // Log if the header is missing
-      throw new HttpException(
-        'Access token not found',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-    console.log('Extracted Token:', token); // Log the extracted token
-
     try {
-      const userId = this.fileService.verifyTokenAndExtractUserId(token);
-      console.log('Extracted UserId:', userId); // Log the extracted userId
-
-      if (!userId) {
-        console.error('Invalid token or userId not found'); // Log invalid token scenario
-        throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
-      }
-
-      console.log('Uploading files for userId:', userId); // Log the userId before file upload
-      return await this.fileService.uploadFiles(files.files, userId);
-    } catch (error) {
-      console.error(
-        'Error during token verification or file upload:',
-        error.message,
-      ); // Log any unexpected errors
-      throw new HttpException(
-        error.message,
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      const userId = req.user.id; // Extract user ID from `req.user`
+      const uploadResult = await this.fileService.uploadFiles(
+        files.files,
+        userId,
       );
+
+      return {
+        status: 'success',
+        data: uploadResult,
+      };
+    } catch (error) {
+      throw error; // Re-throw the error to be handled globally
     }
   }
 

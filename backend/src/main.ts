@@ -52,13 +52,15 @@ async function bootstrap() {
   // Register global exception filter
   // app.useGlobalFilters(new CustomExceptionFilter());
 
-// Configure Swagger for API documentation
-const swaggerConfig = new DocumentBuilder()
-  .setTitle('File Upload and Analysis System')
-  .setDescription('Comprehensive API for user authentication, profile management, and file upload and analysis functionalities. This documentation provides details of all available endpoints, request structures, and responses.')
-  .setVersion('1.0')
-  .addTag('Endpoints')
-  .build();
+  // Configure Swagger for API documentation
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('File Upload and Analysis System')
+    .setDescription(
+      'Comprehensive API for user authentication, profile management, and file upload and analysis functionalities. This documentation provides details of all available endpoints, request structures, and responses.',
+    )
+    .setVersion('1.0')
+    .addTag('Endpoints')
+    .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('/', app, document);

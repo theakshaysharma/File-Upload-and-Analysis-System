@@ -4,6 +4,7 @@ import {
   MinLength,
   IsEmail,
   IsOptional,
+  IsIn,
 } from 'class-validator';
 
 export class LoginDto {
@@ -45,4 +46,24 @@ export class UserResponseDto {
   firstName?: string;
   lastName?: string;
   accessToken?: string;
+}
+
+export class UpdateRoleDto {
+  @IsString()
+  @IsIn(['teammember', 'admin', 'owner'])
+  role: string;
+}
+
+export class UpdateProfileDto {
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @IsOptional()
+  @IsString()
+  username?: string;
 }

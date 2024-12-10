@@ -15,7 +15,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ type: 'text', default: 'normal' }) // Default role set to 'normal'
+  @Column({ type: 'text', default: 'teammember' }) // Default role set to 'teammember'
   role: string;
 
   @Column()

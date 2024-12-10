@@ -19,6 +19,8 @@ export class AuthService {
 
   async register(registerDto: RegisterDto): Promise<UserResponseDto> {
     const { firstName, lastName, username, email, password } = registerDto;
+
+    // Check if the username or email already exists
     const existingUser = await this.userRepository.findOne({
       where: [{ username }, { email }],
     });
@@ -27,15 +29,27 @@ export class AuthService {
       throw new BadRequestException('Username or email already in use');
     }
 
+    // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create the new user with a default role of 'teammember'
     const newUser = this.userRepository.create({
       username,
       email,
       password: hashedPassword,
       firstName,
       lastName,
+      role: 'teammember', // Default role
     });
+
+    // Save the new user to the database
     await this.userRepository.save(newUser);
+
+    // If the user ID is 1, update the role to 'owner'
+    if (newUser.id === 1) {
+      newUser.role = 'owner';
+      await this.userRepository.save(newUser); // Update the user with 'owner' role
+    }
 
     return {
       id: newUser.id,
@@ -61,7 +75,7 @@ export class AuthService {
 
   async login(
     loginDto: LoginDto,
-  ): Promise<{ status: string; data: UserResponseDto }> {
+  ): Promise<{ status: string; data: UserResponseDto | any }> {
     const { userIdentifier, password } = loginDto;
     const user = await this.validateUser(userIdentifier, password);
     if (!user) throw new UnauthorizedException('Invalid credentials');
@@ -77,10 +91,9 @@ export class AuthService {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        role: user.role,
         accessToken: accessToken,
       },
     };
   }
-
-  
 }
