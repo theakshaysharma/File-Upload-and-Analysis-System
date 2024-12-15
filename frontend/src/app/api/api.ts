@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const BASE_URL = process.env.API_BASE_URL || 'http://localhost:9000/v1';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:9000/v1';
 
 const api = axios.create({
   baseURL: BASE_URL,
