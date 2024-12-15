@@ -1,3 +1,5 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
@@ -23,10 +25,10 @@ async function bootstrap() {
   // );
 
   // Enable CORS for specific domains
-  // app.enableCors({
-  //   origin: 'http://localhost:3000',
-  //   methods: 'GET,POST,PUT,DELETE,PATCH,OPTION',
-  // });
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,POST,PUT,DELETE,PATCH,OPTION',
+  });
 
   // Cookie parser middleware
   // app.use(cookieParser());
