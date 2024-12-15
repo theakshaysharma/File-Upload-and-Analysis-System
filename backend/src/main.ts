@@ -23,10 +23,10 @@ async function bootstrap() {
   // );
 
   // Enable CORS for specific domains
-  app.enableCors({
-    origin: 'http://localhost:3000',
-    methods: 'GET,POST,PUT,DELETE,PATCH,OPTION',
-  });
+  // app.enableCors({
+  //   origin: 'http://localhost:3000',
+  //   methods: 'GET,POST,PUT,DELETE,PATCH,OPTION',
+  // });
 
   // Cookie parser middleware
   // app.use(cookieParser());
