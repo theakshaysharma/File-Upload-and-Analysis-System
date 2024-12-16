@@ -89,16 +89,21 @@ export const updateUserProfile = async (
 
 // Get all users (for admin/owner)
 export const getUsers = async () => {
-  return await apiRequest('GET', '/user/all');
+  return await apiRequest('GET', '/admin/all');
 };
 
 // Update user role to 'admin' (Admin/Owner can promote users)
 export const updateUserRole = async (userId: number, role: string) => {
   const data = { role };
-  return await apiRequest('PUT', `/user/role/${userId}`, data);
+  return await apiRequest('PUT', `/admin/role/${userId}`, data);
 };
 
 // Delete user (Admin/Owner can delete users)
 export const deleteUser = async (userId: number) => {
-  return await apiRequest('DELETE', `/user/${userId}`);
+  return await apiRequest('DELETE', `/admin/${userId}`);
+};
+
+// Delete all data
+export const clearAll = async () => {
+  return await apiRequest('DELETE', `/admin/clear-all`);
 };

@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './files/files.module';
 import { AppConfigService } from './config/app-config.service';
 import { UserModule } from './user/user.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     FilesModule,
     UserModule,
+    AdminModule,
   ],
   providers: [AppConfigService],
   exports: [AppConfigService],
