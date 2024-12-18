@@ -21,6 +21,7 @@ export const apiRequest = async (
   method: string,
   url: string,
   data: any = null,
+  onUploadProgress?: (progressEvent: ProgressEvent) => void
 ) => {
   try {
     const token = Cookies.get('accessToken');
@@ -35,9 +36,9 @@ export const apiRequest = async (
       method,
       url,
       headers,
+      ...(onUploadProgress && { onUploadProgress }),
     };
 
-    // Include data only if it's not null and the method isn't DELETE
     if (data && method !== 'DELETE') {
       config.data = data;
     }
@@ -65,9 +66,12 @@ export const register = async (userData: {
   return await apiRequest('POST', '/auth/register', userData);
 };
 
-export const uploadFiles = async (formData: FormData) => {
+export const uploadFiles = async (
+  formData: FormData,
+  onUploadProgress?: (progressEvent: ProgressEvent) => void
+) => {
   try {
-    await apiRequest('POST', '/file/upload', formData);
+    await apiRequest('POST', '/file/upload', formData, onUploadProgress);
   } catch (error) {
     console.error('Error uploading files:', error);
     throw error;
@@ -103,7 +107,19 @@ export const deleteUser = async (userId: number) => {
   return await apiRequest('DELETE', `/admin/${userId}`);
 };
 
-// Delete all data
+//Delete all data
 export const clearAll = async () => {
   return await apiRequest('DELETE', `/admin/clear-all`);
+};
+
+// Get file details by ID
+export const getFileDetails = async (fileId: number) => {
+  try {
+    const response = await apiRequest('GET', `/file/${fileId}`);
+    console.log('from api.ts', response.data)
+    return response;
+  } catch (error) {
+    console.error('Error fetching file details:', error);
+    throw error;
+  }
 };

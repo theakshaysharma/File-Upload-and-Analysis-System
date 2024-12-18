@@ -7,15 +7,21 @@ import { JwtStrategy } from 'src/auth/jwt/jwt.strategy';
 import { FileService } from './files.service';
 import { FileController } from './files.controller';
 import { Document } from 'src/models/document.entity';
+import { QueueModule } from 'src/queue/queue.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
     PassportModule,
+    QueueModule,
     JwtModule.register({
-      secret: 'SECRET_KEY', // Use a secure key stored in `.env`
+      secret: 'SECRET_KEY', 
       signOptions: { expiresIn: '1h' },
     }),
     TypeOrmModule.forFeature([User, Document]),
+    BullModule.registerQueue({
+      name: 'file-upload', 
+    }),
   ],
   providers: [FileService, JwtStrategy],
   controllers: [FileController],

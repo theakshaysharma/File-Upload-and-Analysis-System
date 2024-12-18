@@ -1,12 +1,14 @@
 'use client';
 
-import Link from 'next/link';
+
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getUserProfile } from '../api/api';
+import { getUserProfile, getFileDetails } from '../api/api';
 import { FaUpload } from 'react-icons/fa6';
 import { FaFilePdf, FaImage, FaFileAlt, FaFileExcel } from 'react-icons/fa';
 import Cookies from 'js-cookie';
+import Link from 'next/link';
+import FileModal from '../modal/filemodal';
 import Modal from '../modal/modal';
 
 type Document = {
@@ -15,58 +17,67 @@ type Document = {
   fileType: string;
   filePath: string;
   status: string;
+  extractedData:string;
   createdAt: string;
 };
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [username, setUsername] = useState<string>('');
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         const token = Cookies.get('accessToken');
         if (!token) {
+          console.error('No access token found.');
           throw new Error('No token found');
         }
 
         const response = await getUserProfile();
         if (response.status === 'success') {
           const userData = response.data;
-          setFirstName(userData.firstName);
-          setLastName(userData.lastName);
-          setUsername(userData.username);
+          console.log('User data fetched:', userData);
           setDocuments(userData.documents || []);
           setIsAdmin(['admin', 'owner'].includes(userData.role));
         } else {
+          console.error('Failed to fetch profile data:', response);
           throw new Error('Failed to fetch profile data');
         }
-      } catch (error: any) {
-        if (
-          error.response?.status === 401 ||
-          error.message === 'No token found'
-        ) {
-          Cookies.remove('accessToken');
-          router.push('/');
-        }
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+        Cookies.remove('accessToken');
+        router.push('/');
       } finally {
         setLoading(false);
       }
     };
 
     fetchProfileData();
-  }, []);
+  }, [router]);
 
-  const handleLogout = () => {
-    Cookies.remove('accessToken');
-    router.push('/');
-  };
+  const fetchFileDetails = async (docId: number) => {
+  try {
+    console.log('Fetching file details for docId:', docId);
+    const response = await getFileDetails(docId);
+    console.log('response',response)
+    if (response.status === 'success' && response.data) {
+      console.log('File details fetched:', response.data);
+      setSelectedDocument(response.data); // Ensure this updates correctly
+    } else {
+      console.error('Failed to fetch file details:', response);
+      setSelectedDocument(null); // Handle gracefully
+    }
+  } catch (error) {
+    console.error('Error fetching file details:', error);
+    setSelectedDocument(null); // Handle error case
+  }
+};
+
 
   const getFileIcon = (fileType: string) => {
     if (fileType.startsWith('image/')) {
@@ -84,17 +95,21 @@ export default function ProfilePage() {
     }
   };
 
+    const handleLogout = () => {
+    Cookies.remove('accessToken');
+    router.push('/');
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-10 bg-gray-900 text-white px-6 relative">
-      <button
+       <button
         onClick={() => setIsModalOpen(true)}
         className="absolute top-4 right-4 px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 text-white"
       >
         Logout
       </button>
-
       <h1 className="text-5xl font-bold mb-10">
-        {loading ? 'Loading...' : `Welcome, ${firstName} ${lastName}`}
+        {loading ? 'Loading...' : 'Your Documents'}
       </h1>
 
       <div className="w-full max-w-4xl bg-gray-800 p-8 rounded-lg shadow-lg">
@@ -103,7 +118,11 @@ export default function ProfilePage() {
           {documents.map((doc) => (
             <div
               key={doc.id}
-              className="relative flex flex-col items-center justify-center bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition duration-300"
+              onClick={() => {
+                console.log('Document clicked:', doc);
+                fetchFileDetails(doc.id);
+              }}
+              className="cursor-pointer relative flex flex-col items-center justify-center bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition duration-300"
             >
               {getFileIcon(doc.fileType)}
               <span className="absolute bottom-4 text-center text-xs bg-gray-900 bg-opacity-75 text-white px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity">
@@ -113,7 +132,7 @@ export default function ProfilePage() {
           ))}
         </div>
 
-        <Link href="/edit-profile">
+         <Link href="/edit-profile">
           <button className="w-full p-3 border border-gray-600 rounded-lg focus:outline-none focus:border-gray-400 bg-blue-700 hover:bg-blue-800 transition duration-300">
             Edit Details
           </button>
@@ -134,6 +153,19 @@ export default function ProfilePage() {
         </Link>
       </div>
 
+      {/* File Modal */}
+      {selectedDocument && (
+        <FileModal
+          isOpen={!!selectedDocument}
+          fileName={selectedDocument.fileName}
+          fileType={selectedDocument.fileType}
+          filePath={selectedDocument.filePath}
+          status={selectedDocument.status}
+          extractedData={selectedDocument.extractedData}
+          createdAt={selectedDocument.createdAt}
+          onClose={() => setSelectedDocument(null)}
+        />
+      )}
       {/* Generalized Modal */}
       <Modal
         isOpen={isModalOpen}

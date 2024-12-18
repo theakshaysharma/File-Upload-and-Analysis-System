@@ -9,6 +9,8 @@ import { FilesModule } from './files/files.module';
 import { AppConfigService } from './config/app-config.service';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
+import { BullModule } from '@nestjs/bull';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
@@ -23,12 +25,19 @@ import { AdminModule } from './admin/admin.module';
       synchronize: true,
       logging: false,
     }),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST || '127.0.0.1',
+        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+      },
+    }),
     TypeOrmModule.forFeature([Document, User]),
     HealthModule,
     AuthModule,
     FilesModule,
     UserModule,
     AdminModule,
+    QueueModule,
   ],
   providers: [AppConfigService],
   exports: [AppConfigService],

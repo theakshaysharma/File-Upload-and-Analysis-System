@@ -14,6 +14,7 @@ export default function UploadPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0); // State to track upload progress
 
   useEffect(() => {
     const token = Cookies.get('accessToken');
@@ -44,25 +45,34 @@ export default function UploadPage() {
   };
 
   const uploadFilesHandler = async () => {
-    if (!files.length) return;
+  if (!files.length) return;
 
-    setIsUploading(true);
+  setIsUploading(true);
 
-    try {
-      const formData = new FormData();
-      files.forEach((file) => formData.append('files', file));
-      await uploadFiles(formData);
-      router.push('/profile');
-    } catch (error) {
-      console.error('Error uploading files', error);
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  try {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('files', file));
+
+    await uploadFiles(formData, (event) => {
+      const progressPercentage = Math.round(
+        (event.loaded * 100) / (event.total || 1)
+      );
+      setProgress(progressPercentage);
+    });
+
+    // Navigate to the profile page after successful upload
+    router.push('/profile');
+  } catch (error) {
+    console.error('Error uploading files', error);
+  } finally {
+    setIsUploading(false);
+    setProgress(0); // Reset progress after upload
+  }
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-10 bg-gray-900 text-white px-6 relative">
-      {/* Logout Button */}
       <button
         onClick={() => setIsModalOpen(true)}
         className="absolute top-4 right-4 px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 text-white"
@@ -111,6 +121,16 @@ export default function UploadPage() {
         </label>
       </div>
 
+      {isUploading && (
+        <div className="w-full max-w-md mt-4 bg-gray-700 rounded-lg">
+          <div
+            className="h-2 bg-blue-500 rounded-lg"
+            style={{ width: `${progress}%` }}
+          ></div>
+          <p className="text-center text-gray-400 mt-2">{progress}%</p>
+        </div>
+      )}
+
       <button
         onClick={uploadFilesHandler}
         disabled={!files.length || isUploading}
@@ -129,7 +149,6 @@ export default function UploadPage() {
         </p>
       </Link>
 
-      {/* Generalized Modal */}
       <Modal
         isOpen={isModalOpen}
         title="Logout Confirmation"
