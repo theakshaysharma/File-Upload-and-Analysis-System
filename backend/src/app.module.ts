@@ -12,6 +12,7 @@ import { AdminModule } from "./admin/admin.module";
 import { QueueModule } from "./queue/queue.module";
 import { AppConfigService } from "./config/app-config.service";
 
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,8 +31,8 @@ import { AppConfigService } from "./config/app-config.service";
         
           return {
           redis: {
-            host:'red-cthqv2t6l47c738aoub0',
-            port: 6379,
+            host: process.env.REDIS_HOST,
+            port: parseInt(process.env.REDIS_PORT,10) ?? 6379,
           },
         };
       },

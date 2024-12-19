@@ -21,8 +21,10 @@ import { BullModule } from '@nestjs/bull';
     TypeOrmModule.forFeature([User, Document]),
     BullModule.registerQueue({
       name: 'file-upload', 
-      redis:{host:'red-cthqv2t6l47c738aoub0',
-            port: 6379,}
+      redis: {
+            host: process.env.REDIS_HOST,
+            port: parseInt(process.env.REDIS_PORT,10) ?? 6379,
+          },
     }),
   ],
   providers: [FileService, JwtStrategy],

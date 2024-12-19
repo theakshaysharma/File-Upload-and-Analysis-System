@@ -9,8 +9,10 @@ import { FileUploadProcessor } from './file-upload.processor/file-upload.process
   imports: [
     BullModule.registerQueue({
       name: 'file-upload',
-      redis:{host:'red-cthqv2t6l47c738aoub0',
-            port: 6379,}
+      redis: {
+            host: process.env.REDIS_HOST,
+            port: parseInt(process.env.REDIS_PORT,10) ?? 6379,
+          },
     }),
     TypeOrmModule.forFeature([Document]),
   ],
