@@ -1,17 +1,16 @@
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { User } from "./models/user.entity";
-import { Document } from "./models/document.entity";
-import { BullModule } from "@nestjs/bull";
-import { HealthModule } from "./health/health.module";
-import { AuthModule } from "./auth/auth.module";
-import { FilesModule } from "./files/files.module";
-import { UserModule } from "./user/user.module";
-import { AdminModule } from "./admin/admin.module";
-import { QueueModule } from "./queue/queue.module";
-import { AppConfigService } from "./config/app-config.service";
-
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './models/user.entity';
+import { Document } from './models/document.entity';
+import { BullModule } from '@nestjs/bull';
+import { HealthModule } from './health/health.module';
+import { AuthModule } from './auth/auth.module';
+import { FilesModule } from './files/files.module';
+import { UserModule } from './user/user.module';
+import { AdminModule } from './admin/admin.module';
+import { QueueModule } from './queue/queue.module';
+import { AppConfigService } from './config/app-config.service';
 
 @Module({
   imports: [
@@ -28,11 +27,10 @@ import { AppConfigService } from "./config/app-config.service";
     }),
     BullModule.forRootAsync({
       useFactory: async () => {
-        
-          return {
+        return {
           redis: {
             host: process.env.REDIS_HOST,
-            port: parseInt(process.env.REDIS_PORT,10) ?? 6379,
+            port: parseInt(process.env.REDIS_PORT, 10) ?? 6379,
           },
         };
       },

@@ -1,58 +1,49 @@
-import { readFileSync } from 'fs';
-import { PDFDocument } from 'pdf-lib';
-import Tesseract from 'tesseract.js';
-import { parse } from 'papaparse';
-import * as xlsx from 'xlsx';
 import * as pdfParse from 'pdf-parse';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as csvParser from 'csv-parser';
+import * as xlsx from 'xlsx';
+
 const BASE_PATH = path.resolve(__dirname, '../../..');
+
 // PDF Text Extraction
 export async function extractPDFText(filePath: string): Promise<string> {
-  // Use path.join to ensure the correct file path
-  
   const fullPath = path.join(BASE_PATH, filePath);
-  console.log('extractpdf',fullPath);
-  const fileData = fs.readFileSync(fullPath); // Read the file
+  console.log('extractpdf', fullPath);
+  const fileData = fs.readFileSync(fullPath);
 
-  const pdfData = await pdfParse(fileData); // Parse the PDF file
-  return pdfData.text; // Extracted text
+  const pdfData = await pdfParse(fileData);
+  return pdfData.text;
 }
-
-
-export async function extractImageText(file: Express.Multer.File): Promise<string> {
-  try {
-    // Construct the absolute file path
-    const filePath = path.join(BASE_PATH, 'uploads', file.filename);
-    console.log('Extracting text from file at:', filePath);
-
-    // Use Tesseract to recognize text from the image file
-    const result = await Tesseract.recognize(
-      filePath,
-      'eng',
-      { logger: (m) => console.log(m) } // Optional: log the progress
-    );
-
-    return result.data.text;
-  } catch (error) {
-    console.error('Error during OCR processing:', error);
-    throw new Error('Failed to recognize text from image');
-  }
-}
-
-
-
 
 // CSV Parsing
-export async function parseCSV(filePath: string): Promise<any[]> {
-  const fileData = readFileSync(filePath, 'utf8');
-  const { data } = parse(fileData, { header: true });
-  return data;
+export async function parseCSV(filePath: string): Promise<string> {
+  const fullPath = path.join(BASE_PATH, filePath);
+  console.log('parseCSV', fullPath);
+  return new Promise((resolve, reject) => {
+    const results: string[] = [];
+    fs.createReadStream(fullPath)
+      .pipe(csvParser())
+      .on('data', (data) => results.push(JSON.stringify(data)))
+      .on('end', () => resolve(results.join('\n')))
+      .on('error', (err) => reject(err));
+  });
 }
 
 // Excel Parsing
-export async function parseExcel(filePath: string): Promise<any[]> {
-  const workbook = xlsx.readFile(filePath);
-  const sheetName = workbook.SheetNames[0];
-  return xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+export async function parseExcel(filePath: string): Promise<string> {
+  const fullPath = path.join(BASE_PATH, filePath);
+  console.log('parseExcel', fullPath);
+
+  const workbook = xlsx.readFile(fullPath);
+  const sheetNames = workbook.SheetNames;
+
+  const data: string[] = [];
+  sheetNames.forEach((sheetName) => {
+    const sheet = workbook.Sheets[sheetName];
+    const sheetData = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+    data.push(JSON.stringify(sheetData));
+  });
+
+  return data.join('\n');
 }

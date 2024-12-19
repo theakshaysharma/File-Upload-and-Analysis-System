@@ -12,7 +12,7 @@ import { Document } from 'src/models/document.entity';
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: 'SECRET_KEY', 
+      secret: 'SECRET_KEY',
       signOptions: { expiresIn: '1h' },
     }),
     TypeOrmModule.forFeature([User, Document]),

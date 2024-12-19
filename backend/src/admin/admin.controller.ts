@@ -11,15 +11,13 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/guards/jwt.guards';
-import {  UpdateRoleDto } from 'src/auth/dto/dto';
+import { UpdateRoleDto } from 'src/auth/dto/dto';
 import { AdminService } from './admin.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
-
-  
 
   @Put('role/:id')
   async updateRole(
@@ -65,28 +63,26 @@ export class AdminController {
 
   @Delete('clear-all')
   async clearAllData(@Req() req: any) {
-    console.log('here in controller')
-  const requestingUserId = req.user.id;
+    console.log('here in controller');
+    const requestingUserId = req.user.id;
 
-  // Validate admin or owner
-  const requestingUser = await this.adminService.findUserById(requestingUserId);
-  if (
-    requestingUser.id !== 1 && // Owner ID check
-    requestingUser.role !== 'owner'
-  ) {
-    throw new ForbiddenException(
-      'Only the owner can perform this action'
-    );
+    // Validate admin or owner
+    const requestingUser =
+      await this.adminService.findUserById(requestingUserId);
+    if (
+      requestingUser.id !== 1 && // Owner ID check
+      requestingUser.role !== 'owner'
+    ) {
+      throw new ForbiddenException('Only the owner can perform this action');
+    }
+
+    await this.adminService.clearAllData();
+
+    return {
+      status: 'success',
+      message: 'All data has been cleared successfully',
+    };
   }
-
-  await this.adminService.clearAllData();
-
-  return {
-    status: 'success',
-    message: 'All data has been cleared successfully',
-  };
-}
-
 
   @Get('all')
   async getAllUsers(@Req() req: any) {

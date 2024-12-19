@@ -1,7 +1,8 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:9000/v1';
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:9000/v1';
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -21,7 +22,7 @@ export const apiRequest = async (
   method: string,
   url: string,
   data: any = null,
-  onUploadProgress?: (progressEvent: ProgressEvent) => void
+  onUploadProgress?: (progressEvent: ProgressEvent) => void,
 ) => {
   try {
     const token = Cookies.get('accessToken');
@@ -68,7 +69,7 @@ export const register = async (userData: {
 
 export const uploadFiles = async (
   formData: FormData,
-  onUploadProgress?: (progressEvent: ProgressEvent) => void
+  onUploadProgress?: (progressEvent: ProgressEvent) => void,
 ) => {
   try {
     await apiRequest('POST', '/file/upload', formData, onUploadProgress);
@@ -82,8 +83,15 @@ export const getUserProfile = async () => {
   return await apiRequest('GET', '/user/profile');
 };
 
-export const getAllFiles = async () => {
-  return await apiRequest('GET', '/file/all');
+export const getAllFiles = async (filters?: {
+  fileName?: string;
+  fileType?: string;
+}) => {
+  const queryParams = new URLSearchParams(filters as any).toString();
+  return await apiRequest(
+    'GET',
+    `/file/all${queryParams ? `?${queryParams}` : ''}`,
+  );
 };
 
 // Update user profile (First name and Last name)
@@ -120,13 +128,12 @@ export const clearAll = async () => {
 export const getFileDetails = async (fileId: number) => {
   try {
     const response = await apiRequest('GET', `/file/${fileId}`);
-    console.log('from api.ts', response.data)
+    console.log('from api.ts', response.data);
     return response;
   } catch (error) {
     console.error('Error fetching file details:', error);
     throw error;
   }
-  
 };
 
 // Delete file by ID
@@ -138,4 +145,3 @@ export const deleteFileById = async (fileId: number) => {
     throw error;
   }
 };
-

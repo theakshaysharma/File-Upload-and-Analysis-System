@@ -30,7 +30,18 @@ export default function UploadPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(Array.from(e.target.files));
+      const validFiles = Array.from(e.target.files).filter((file) => {
+        const fileType = file.type;
+        return (
+          fileType.startsWith('image/') || // Images
+          fileType === 'application/vnd.ms-excel' || // Excel
+          fileType ===
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || // XLSX
+          fileType === 'text/csv' || // CSV
+          fileType === 'application/pdf' // PDF
+        );
+      });
+      setFiles(validFiles);
     }
   };
 
@@ -39,37 +50,46 @@ export default function UploadPage() {
     e.stopPropagation();
     setIsDragging(false);
 
-    if (e.dataTransfer.files) {
-      setFiles(Array.from(e.dataTransfer.files));
-    }
+    const validFiles = Array.from(e.dataTransfer.files).filter((file) => {
+      const fileType = file.type;
+      return (
+        fileType.startsWith('image/') || // Images
+        fileType === 'application/vnd.ms-excel' || // Excel
+        fileType ===
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || // XLSX
+        fileType === 'text/csv' || // CSV
+        fileType === 'application/pdf' // PDF
+      );
+    });
+
+    setFiles(validFiles);
   };
 
   const uploadFilesHandler = async () => {
-  if (!files.length) return;
+    if (!files.length) return;
 
-  setIsUploading(true);
+    setIsUploading(true);
 
-  try {
-    const formData = new FormData();
-    files.forEach((file) => formData.append('files', file));
+    try {
+      const formData = new FormData();
+      files.forEach((file) => formData.append('files', file));
 
-    await uploadFiles(formData, (event) => {
-      const progressPercentage = Math.round(
-        (event.loaded * 100) / (event.total || 1)
-      );
-      setProgress(progressPercentage);
-    });
+      await uploadFiles(formData, (event) => {
+        const progressPercentage = Math.round(
+          (event.loaded * 100) / (event.total || 1),
+        );
+        setProgress(progressPercentage);
+      });
 
-    // Navigate to the profile page after successful upload
-    router.push('/profile');
-  } catch (error) {
-    console.error('Error uploading files', error);
-  } finally {
-    setIsUploading(false);
-    setProgress(0); // Reset progress after upload
-  }
-};
-
+      // Navigate to the profile page after successful upload
+      router.push('/profile');
+    } catch (error) {
+      console.error('Error uploading files', error);
+    } finally {
+      setIsUploading(false);
+      setProgress(0); // Reset progress after upload
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-10 bg-gray-900 text-white px-6 relative">
@@ -99,6 +119,7 @@ export default function UploadPage() {
           onChange={handleFileChange}
           className="hidden"
           id="fileInput"
+          accept=".jpg, .jpeg, .png, .xls, .xlsx, .csv, .pdf"
         />
         <label
           htmlFor="fileInput"

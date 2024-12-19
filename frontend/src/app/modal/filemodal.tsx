@@ -32,11 +32,14 @@ export default function FileModal({
 
   if (!isOpen) return null;
 
+  // Ensure filePath points to the correct URL
+  const fullPath = `${process.env.PUBLIC_URL}/uploads/${filePath}`;
+
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
       await deleteFileById(fileId);
-      onDeleteSuccess(); // Notify parent about the deletion
+      onDeleteSuccess();
       onClose();
     } catch (error) {
       console.error('Error deleting file:', error);
@@ -68,20 +71,25 @@ export default function FileModal({
               <span className="font-bold">Status:</span> {status}
             </li>
             <li>
-              <span className="font-bold">Created At:</span> {new Date(createdAt).toLocaleString()}
+              <span className="font-bold">Created At:</span>{' '}
+              {new Date(createdAt).toLocaleString()}
             </li>
           </ul>
-          <div className="mb-6">
-            <h3 className="font-semibold text-lg">Extracted Data:</h3>
-            <div className="bg-gray-700 text-white p-4 rounded-lg max-h-60 overflow-y-auto whitespace-pre-wrap break-words">
-              {typeof parsedExtractedData === 'object'
-                ? JSON.stringify(parsedExtractedData, null, 2)
-                : parsedExtractedData}
-            </div>
-          </div>
+          {parsedExtractedData && (
+            <>
+              <div className="mb-6">
+                <h3 className="font-semibold text-lg">Extracted Data:</h3>
+                <div className="bg-gray-700 text-white p-4 rounded-lg max-h-60 overflow-y-auto whitespace-pre-wrap break-words">
+                  {typeof parsedExtractedData === 'object'
+                    ? JSON.stringify(parsedExtractedData, null, 2)
+                    : parsedExtractedData}
+                </div>
+              </div>
+            </>
+          )}
           <div className="mb-6">
             <a
-              href={filePath}
+              href={fullPath}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 underline hover:text-blue-300"

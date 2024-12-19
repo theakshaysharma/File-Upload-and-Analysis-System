@@ -112,19 +112,21 @@ export class AdminService {
   }
 
   async clearAllData() {
-  try {
-    console.log('gfhjskhbvdhj')
-    // Access all repositories and truncate tables (SQLite requires DELETE for clearing tables)
-    await this.documentRepository.clear();
-    await this.userRepository.clear();
+    try {
+      console.log('gfhjskhbvdhj');
+      // Access all repositories and truncate tables (SQLite requires DELETE for clearing tables)
+      await this.documentRepository.clear();
+      await this.userRepository.clear();
 
-    // Optionally: Reset auto-increment IDs in SQLite
-    await this.userRepository.query('DELETE FROM sqlite_sequence WHERE name="user";');
-    await this.documentRepository.query('DELETE FROM sqlite_sequence WHERE name="document";');
-
-  } catch (error) {
-    throw new Error('Failed to clear database: ' + error.message);
+      // Optionally: Reset auto-increment IDs in SQLite
+      await this.userRepository.query(
+        'DELETE FROM sqlite_sequence WHERE name="user";',
+      );
+      await this.documentRepository.query(
+        'DELETE FROM sqlite_sequence WHERE name="document";',
+      );
+    } catch (error) {
+      throw new Error('Failed to clear database: ' + error.message);
+    }
   }
-}
-
 }

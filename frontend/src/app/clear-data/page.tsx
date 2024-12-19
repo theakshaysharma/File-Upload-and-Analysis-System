@@ -9,7 +9,8 @@ import { clearAll, getUserProfile } from '../api/api';
 export default function ClearAllDataPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal for Logout
-  const [isClearDataModalOpen, setIsClearDataModalOpen] = useState<boolean>(false); // Modal for Clear Data
+  const [isClearDataModalOpen, setIsClearDataModalOpen] =
+    useState<boolean>(false); // Modal for Clear Data
 
   const handleClearData = async () => {
     try {
@@ -44,15 +45,14 @@ export default function ClearAllDataPage() {
         const response = await getUserProfile();
         if (response.status === 'success') {
           const userData = response.data;
-          if(userData.role!=='owner'){
+          if (userData.role !== 'owner') {
             Cookies.remove('accessToken');
             router.push('/');
           }
-          } else {
+        } else {
           throw new Error('Failed to fetch profile data');
         }
-      } 
-      catch (error: any) {
+      } catch (error: any) {
         if (
           error.response?.status === 401 ||
           error.message === 'No token found'
@@ -60,7 +60,7 @@ export default function ClearAllDataPage() {
           Cookies.remove('accessToken');
           router.push('/');
         }
-      } 
+      }
     };
 
     fetchProfileData();
@@ -81,7 +81,10 @@ export default function ClearAllDataPage() {
         <h2 className="text-2xl font-bold mb-6">Warning</h2>
 
         <p className="text-lg mb-6">
-          Clearing all application data will remove <span className="font-bold">all information</span> from the database, including users, settings, and other stored data. This action is irreversible.
+          Clearing all application data will remove{' '}
+          <span className="font-bold">all information</span> from the database,
+          including users, settings, and other stored data. This action is
+          irreversible.
         </p>
 
         <button

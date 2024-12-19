@@ -34,7 +34,6 @@ export class UserController {
     };
   }
 
-  
   @Put('profile')
   async updateProfile(
     @Req() req: any,
@@ -51,6 +50,4 @@ export class UserController {
       data: updatedProfile,
     };
   }
-
-  
 }

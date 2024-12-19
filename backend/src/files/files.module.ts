@@ -15,16 +15,16 @@ import { BullModule } from '@nestjs/bull';
     PassportModule,
     QueueModule,
     JwtModule.register({
-      secret: 'SECRET_KEY', 
+      secret: 'SECRET_KEY',
       signOptions: { expiresIn: '1h' },
     }),
     TypeOrmModule.forFeature([User, Document]),
     BullModule.registerQueue({
-      name: 'file-upload', 
+      name: 'file-upload',
       redis: {
-            host: process.env.REDIS_HOST,
-            port: parseInt(process.env.REDIS_PORT,10) ?? 6379,
-          },
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT, 10) ?? 6379,
+      },
     }),
   ],
   providers: [FileService, JwtStrategy],

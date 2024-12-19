@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getUserProfile, getFileDetails} from '../api/api';
+import { getUserProfile, getFileDetails } from '../api/api';
 import { FaUpload } from 'react-icons/fa6';
 import { FaFilePdf, FaImage, FaFileAlt, FaFileExcel } from 'react-icons/fa';
 import Cookies from 'js-cookie';
@@ -25,7 +25,9 @@ export default function ProfilePage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(
+    null,
+  );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [totalDoc, setTotalDoc] = useState(0);
 
@@ -38,7 +40,7 @@ export default function ProfilePage() {
           throw new Error('No token found');
         }
 
-        const response:any = await getUserProfile();
+        const response: any = await getUserProfile();
         if (response.status === 'success') {
           const userData = response.data;
           setDocuments(userData.documents || []);
@@ -80,7 +82,8 @@ export default function ProfilePage() {
       return <FaFilePdf className="text-red-500 text-4xl" />;
     } else if (
       fileType === 'application/vnd.ms-excel' ||
-      fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      fileType ===
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ) {
       return <FaFileExcel className="text-green-400 text-4xl" />;
     } else {
@@ -88,19 +91,18 @@ export default function ProfilePage() {
     }
   };
 
-  const handleViewAllFiles =() => {
+  const handleViewAllFiles = () => {
     router.push('/files');
-  }
+  };
 
   const handleLogout = () => {
     Cookies.remove('accessToken');
     router.push('/');
   };
   const handleDeleteSuccess = () => {
-  console.log('File deleted successfully');
-  // Add logic for handling successful file deletion
-};
-
+    console.log('File deleted successfully');
+    router.replace('/profile');
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-10 bg-gray-900 text-white px-6 relative">
@@ -115,34 +117,40 @@ export default function ProfilePage() {
       </h1>
 
       <div className="w-full max-w-4xl bg-gray-800 p-8 rounded-lg shadow-lg">
-     {totalDoc>0 &&    <h2 className="text-2xl font-bold mb-6">Uploaded Documents</h2>}
-       <div className="grid grid-cols-4 sm:grid-cols-5 gap-6 mb-6 justify-center">
-  {documents.slice(0, totalDoc > 4 ? 3 : 4).map((doc) => (
-    <div
-      key={doc.id}
-      onClick={() => fetchFileDetails(doc.id)}
-      className="cursor-pointer relative flex flex-col items-center justify-center bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition duration-300"
-    >
-      {getFileIcon(doc.fileType)}
-      <span className="absolute bottom-4 text-center text-xs bg-gray-900 bg-opacity-75 text-white px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity">
-        {doc.fileName}
-      </span>
-    </div>
-  ))}
+        {totalDoc > 0 && (
+          <h2 className="text-2xl font-bold mb-6">Uploaded Documents</h2>
+        )}
+        <div className="grid grid-cols-4 sm:grid-cols-5 gap-6 mb-6 justify-center">
+          {documents.slice(0, totalDoc > 4 ? 3 : 4).map((doc) => (
+            <div
+              key={doc.id}
+              onClick={() => fetchFileDetails(doc.id)}
+              className="cursor-pointer relative flex flex-col items-center justify-center bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition duration-300"
+            >
+              {getFileIcon(doc.fileType)}
 
-  {/* Conditional button */}
-  {totalDoc > 4 && (
-    <div className="flex items-center justify-center">
-      <button
-        onClick={() => handleViewAllFiles()}
-        className="cursor-pointer flex items-center justify-center bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-500 transition duration-300"
-      >
-        View All Files
-      </button>
-    </div>
-  )}
-</div>
+              {/* File Name with Tooltip */}
+              <div
+                className="mt-2 max-w-full text-center text-xs text-white overflow-hidden text-ellipsis whitespace-nowrap"
+                title={doc.fileName} // Tooltip for full name
+              >
+                {doc.fileName}
+              </div>
+            </div>
+          ))}
 
+          {/* Conditional button */}
+          {totalDoc > 4 && (
+            <div className="flex items-center justify-center">
+              <button
+                onClick={() => handleViewAllFiles()}
+                className="cursor-pointer flex items-center justify-center bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-500 transition duration-300"
+              >
+                View All Files
+              </button>
+            </div>
+          )}
+        </div>
 
         <Link href="/edit-profile">
           <button className="w-full p-3 border border-gray-600 rounded-lg focus:outline-none focus:border-gray-400 bg-blue-700 hover:bg-blue-800 transition duration-300">
@@ -167,19 +175,18 @@ export default function ProfilePage() {
 
       {/* File Modal */}
       {selectedDocument && (
-        
         <FileModal
-  isOpen={!!selectedDocument}
-  fileName={selectedDocument.fileName}
-  fileType={selectedDocument.fileType}
-  filePath={selectedDocument.filePath}
-  status={selectedDocument.status}
-  extractedData={selectedDocument.extractedData}
-  createdAt={selectedDocument.createdAt}
-  fileId={selectedDocument.id} 
-    onDeleteSuccess={() => handleDeleteSuccess()}
-  onClose={() => setSelectedDocument(null)}
-/>
+          isOpen={!!selectedDocument}
+          fileName={selectedDocument.fileName}
+          fileType={selectedDocument.fileType}
+          filePath={selectedDocument.filePath}
+          status={selectedDocument.status}
+          extractedData={selectedDocument.extractedData}
+          createdAt={selectedDocument.createdAt}
+          fileId={selectedDocument.id}
+          onDeleteSuccess={() => handleDeleteSuccess()}
+          onClose={() => setSelectedDocument(null)}
+        />
       )}
       {/* Generalized Modal */}
       <Modal
