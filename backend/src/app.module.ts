@@ -27,18 +27,19 @@ import { parse } from 'url';
       logging: false,
     }),
     BullModule.forRootAsync({
-      useFactory: () => {
-        const redisUrl = process.env.REDIS_URL;
-        const { hostname: host, port } = parse(redisUrl);
+      useFactory: async () => {
+      const redisUrl = process.env.REDIS_URL;
+      const { hostname: host, port } = new URL(redisUrl);
 
-        return {
-          redis: {
-            host,
-            port: port ? parseInt(port, 10) : 6379,
-          },
-        };
-      },
-    }),
+      return {
+        redis: {
+          host,
+          port: port ? parseInt(port, 10) : 6379,
+        },
+      };
+    },
+  }),
+
     TypeOrmModule.forFeature([Document, User]),
     HealthModule,
     AuthModule,
