@@ -28,7 +28,7 @@ import { parse } from 'url';
     }),
     BullModule.forRootAsync({
       useFactory: () => {
-        const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+        const redisUrl = process.env.REDIS_URL;
         const { hostname: host, port } = parse(redisUrl);
 
         return {

@@ -82,6 +82,10 @@ export const getUserProfile = async () => {
   return await apiRequest('GET', '/user/profile');
 };
 
+export const getAllFiles = async () => {
+  return await apiRequest('GET', '/file/all');
+};
+
 // Update user profile (First name and Last name)
 export const updateUserProfile = async (
   firstName: string,

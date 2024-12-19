@@ -42,23 +42,36 @@ export class FileController {
     }
   }
 
-  @Get()
-  async getFiles(
-    @Query('page', ParseIntPipe) page = 1,
-    @Query('limit', ParseIntPipe) limit = 10,
-  ) {
-    const { data, total } = await this.fileService.getFiles(page, limit);
-    return {
-      data: data.map((file) => ({
-        id: file.id,
-        fileName: file.fileName,
-        fileType: file.fileType,
-        status: file.status,
-        createdAt: file.createdAt,
-      })),
-      total,
-    };
-  }
+ @Get('/all')
+async getFiles(@Req() req: any, @Query() query: any) {
+  const userId = req.user.id; // Extract userId from the request object
+
+  // Deconstruct query parameters with defaults
+  const { page , limit , fileName, fileType } = query;
+
+  const { data, total } = await this.fileService.getFiles({
+    userId,
+    page: Number(page),
+    limit: Number(limit),
+    fileName,
+    fileType,
+  });
+
+  return {
+    status:"success",
+    data:{
+      documents: data.map((file) => ({
+      id: file.id,
+      fileName: file.fileName,
+      fileType: file.fileType,
+      status: file.status,
+      createdAt: file.createdAt,
+    })),
+    total,}
+  };
+}
+
+
 
   @Get(':id')
   async getFileDetails(@Param('id', ParseIntPipe) id: number) {

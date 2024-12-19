@@ -62,17 +62,43 @@ console.log('coming here saveExtractedData',existingFile);
 
 
 
-  async getFiles(
-    page: number,
-    limit: number,
-  ): Promise<{ data: Document[]; total: number }> {
-    const [data, total] = await this.fileRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-    console.log('data',data,'total',total)
-    return { data, total };
+ async getFiles(params: {
+  userId: number;
+  page?: number;
+  limit?: number;
+  fileName?: string;
+  fileType?: string;
+}): Promise<{ data: Document[]; total: number }> {
+  try{
+  const { userId, page, limit, fileName, fileType } = params;
+
+  const queryBuilder = this.fileRepository.createQueryBuilder('file');
+
+  // Filter files by userId
+  queryBuilder.where('file.userId = :userId', { userId });
+
+  // Add filters for fileName and fileType
+  if (fileName) {
+    queryBuilder.andWhere('file.fileName LIKE :fileName', { fileName: `%${fileName}%` });
   }
+  if (fileType) {
+    queryBuilder.andWhere('file.fileType = :fileType', { fileType });
+  }
+
+  // Add pagination if page and limit are provided
+  if (page && limit) {
+    queryBuilder.skip((page - 1) * limit).take(limit);
+  }
+
+  const [data, total] = await queryBuilder.getManyAndCount();
+  return { data, total };}
+  catch(e){
+    console.log('erroe here',e)
+    throw e;
+  }
+}
+
+
 
   async getFileDetails(id: number): Promise<Document> {
     const document = await this.fileRepository.findOne({

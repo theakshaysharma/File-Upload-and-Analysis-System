@@ -19,23 +19,29 @@ export class UserService {
   ) {}
 
   async getProfile(userId: number) {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['documents'],
-    });
+  const user = await this.userRepository.findOne({
+    where: { id: userId },
+    relations: ['documents'],
+  });
 
-    if (!user) return null;
+  if (!user) return null;
 
-    return {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role,
-      documents: user.documents,
-    };
-  }
+  const totalDocuments = user.documents.length;
+  const maxDocuments = totalDocuments > 4 ? 3 : 4;
+  const documentsToSend = user.documents.slice(0, maxDocuments);
+
+  return {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    role: user.role,
+    documents: documentsToSend,
+    documentCount: totalDocuments, 
+  };
+}
+
 
   async updateProfile(userId: number, updateProfileDto: UpdateProfileDto) {
     const user = await this.userRepository.findOne({ where: { id: userId } });

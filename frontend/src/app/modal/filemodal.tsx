@@ -7,7 +7,7 @@ type FileModalProps = {
   filePath: string;
   status: string;
   createdAt: string;
-  extractedData: string;  // Add the extracted data prop
+  extractedData: string; // Add the extracted data prop
   onClose: () => void;
 };
 
@@ -34,7 +34,7 @@ export default function FileModal({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg max-w-md w-full">
+      <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold mb-4">{fileName}</h2>
         <ul className="mb-6">
           <li>
@@ -47,7 +47,7 @@ export default function FileModal({
             <span className="font-bold">Created At:</span> {new Date(createdAt).toLocaleString()}
           </li>
         </ul>
-        
+
         {/* Display extracted data with scrollable area */}
         <div className="mb-6">
           <h3 className="font-semibold text-lg">Extracted Data:</h3>

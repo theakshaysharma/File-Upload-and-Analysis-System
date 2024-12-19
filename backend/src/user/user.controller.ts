@@ -34,6 +34,7 @@ export class UserController {
     };
   }
 
+  
   @Put('profile')
   async updateProfile(
     @Req() req: any,
