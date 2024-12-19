@@ -11,6 +11,7 @@ import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
 import { BullModule } from '@nestjs/bull';
 import { QueueModule } from './queue/queue.module';
+import { parse } from 'url';
 
 @Module({
   imports: [
@@ -25,10 +26,17 @@ import { QueueModule } from './queue/queue.module';
       synchronize: true,
       logging: false,
     }),
-    BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_HOST || '127.0.0.1',
-        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    BullModule.forRootAsync({
+      useFactory: () => {
+        const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+        const { hostname: host, port } = parse(redisUrl);
+
+        return {
+          redis: {
+            host,
+            port: port ? parseInt(port, 10) : 6379,
+          },
+        };
       },
     }),
     TypeOrmModule.forFeature([Document, User]),
