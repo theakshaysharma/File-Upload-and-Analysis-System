@@ -96,6 +96,11 @@ export default function ProfilePage() {
     Cookies.remove('accessToken');
     router.push('/');
   };
+  const handleDeleteSuccess = () => {
+  console.log('File deleted successfully');
+  // Add logic for handling successful file deletion
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-10 bg-gray-900 text-white px-6 relative">
@@ -162,16 +167,19 @@ export default function ProfilePage() {
 
       {/* File Modal */}
       {selectedDocument && (
+        
         <FileModal
-          isOpen={!!selectedDocument}
-          fileName={selectedDocument.fileName}
-          fileType={selectedDocument.fileType}
-          filePath={selectedDocument.filePath}
-          status={selectedDocument.status}
-          extractedData={selectedDocument.extractedData}
-          createdAt={selectedDocument.createdAt}
-          onClose={() => setSelectedDocument(null)}
-        />
+  isOpen={!!selectedDocument}
+  fileName={selectedDocument.fileName}
+  fileType={selectedDocument.fileType}
+  filePath={selectedDocument.filePath}
+  status={selectedDocument.status}
+  extractedData={selectedDocument.extractedData}
+  createdAt={selectedDocument.createdAt}
+  fileId={selectedDocument.id} 
+    onDeleteSuccess={() => handleDeleteSuccess()}
+  onClose={() => setSelectedDocument(null)}
+/>
       )}
       {/* Generalized Modal */}
       <Modal

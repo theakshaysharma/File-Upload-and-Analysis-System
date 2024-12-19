@@ -75,6 +75,12 @@ export default function AllFiles() {
     setFilteredDocuments(filtered);
   };
 
+  const handleDeleteSuccess = () => {
+  console.log('File deleted successfully');
+  // Add logic for handling successful file deletion
+};
+
+
   const getFileIcon = (fileType: string) => {
     if (fileType.startsWith('image/')) {
       return <FaImage className="text-green-500 text-4xl" />;
@@ -143,7 +149,7 @@ export default function AllFiles() {
 
       {/* File Modal */}
       {selectedDocument && (
-        <FileModal
+              <FileModal
           isOpen={!!selectedDocument}
           fileName={selectedDocument.fileName}
           fileType={selectedDocument.fileType}
@@ -151,6 +157,8 @@ export default function AllFiles() {
           status={selectedDocument.status}
           extractedData={selectedDocument.extractedData}
           createdAt={selectedDocument.createdAt}
+          fileId={selectedDocument.id} 
+            onDeleteSuccess={() => handleDeleteSuccess()}
           onClose={() => setSelectedDocument(null)}
         />
       )}

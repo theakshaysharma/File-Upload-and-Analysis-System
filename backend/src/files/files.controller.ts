@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UseGuards,
   Req,
+  Delete,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { FileService } from './files.service';
@@ -92,4 +93,20 @@ async getFiles(@Req() req: any, @Query() query: any) {
       },
     };
   }
+
+
+
+  @Delete(':id')
+async deleteFile(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
+  try {
+    const userId = req.user.id; // Ensure the user has access to delete the file
+    const result = await this.fileService.deleteFile(id, userId);
+    return {
+      status: 'success',
+      message: result ? 'File deleted successfully' : 'File not found or unauthorized',
+    };
+  } catch (error) {
+    throw error;
+  }
+}
 }

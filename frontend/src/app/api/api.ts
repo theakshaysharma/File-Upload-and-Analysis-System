@@ -126,4 +126,16 @@ export const getFileDetails = async (fileId: number) => {
     console.error('Error fetching file details:', error);
     throw error;
   }
+  
 };
+
+// Delete file by ID
+export const deleteFileById = async (fileId: number) => {
+  try {
+    return await apiRequest('DELETE', `/file/${fileId}`);
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    throw error;
+  }
+};
+

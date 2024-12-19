@@ -108,4 +108,18 @@ console.log('coming here saveExtractedData',existingFile);
 console.log('document',document)
     return document;
   }
+
+  async deleteFile(id: number, userId: number): Promise<boolean> {
+  const file = await this.fileRepository.findOne({
+    where: { id, userId:JSON.stringify(userId) },
+  });
+
+  if (!file) {
+    return false; 
+  }
+
+  await this.fileRepository.delete(id);
+  return true;
+}
+
 }

@@ -160,81 +160,80 @@ export default function EditUsersPage() {
       <div className="w-full max-w-4xl bg-gray-800 p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-6">Users List</h2>
 
-        <table className="w-full table-auto text-left text-sm">
-          <thead>
-            <tr>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Username</th>
-              <th className="px-4 py-2">Role</th>
-              <th className="px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td className="px-4 py-2">
-                  {user.firstName} {user.lastName}
-                </td>
-                <td className="px-4 py-2">{user.username}</td>
-                <td className="px-4 py-2 w-32 text-center truncate">
-                  {user.role}
-                </td>
-                <td className="px-4 py-2 flex gap-2">
-                  {user.id !== userId && userRole === 'owner' && (
-                    <>
-                      {user.role === 'teammember' && (
-                        <button
-                          onClick={() => handleMakeAdmin(user.id)}
-                          className="w-36 px-4 py-2 bg-green-600 hover:bg-green-700 rounded"
-                        >
-                          Make Admin
-                        </button>
-                      )}
-                      {user.role === 'admin' && (
-                        <button
-                          onClick={() => handleRemoveAdmin(user.id)}
-                          className="w-36 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded"
-                        >
-                          Remove Admin
-                        </button>
-                      )}
-                      <button
-                        onClick={() => {
-                          setSelectedUserId(user.id);
-                          setIsDeleteModalOpen(true);
-                        }}
-                        className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </>
-                  )}
-                  {user.id !== userId &&
-                    userRole === 'admin' &&
-                    user.role === 'teammember' && (
-                      <>
-                        <button
-                          onClick={() => handleMakeAdmin(user.id)}
-                          className="w-36 px-4 py-2 bg-green-600 hover:bg-green-700 rounded"
-                        >
-                          Make Admin
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedUserId(user.id);
-                            setIsDeleteModalOpen(true);
-                          }}
-                          className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded"
-                        >
-                          <FaTrashAlt />
-                        </button>
-                      </>
-                    )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+<table className="w-full table-auto text-left text-sm">
+  <thead>
+    <tr>
+      <th className="px-2 py-1">Name</th>
+      <th className="px-2 py-1">Username</th>
+      <th className="px-2 py-1 text-center">Role</th>
+      <th className="px-2 py-1">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {users.map((user) => (
+      <tr key={user.id}>
+        <td className="px-2 py-1 whitespace-nowrap">
+          {user.firstName} {user.lastName}
+        </td>
+        <td className="px-2 py-1">{user.username}</td>
+        <td className="px-2 py-1 text-center">{user.role}</td>
+        <td className="px-2 py-1 flex gap-1">
+          {user.id !== userId && userRole === 'owner' && (
+            <>
+              {user.role === 'teammember' && (
+                <button
+                  onClick={() => handleMakeAdmin(user.id)}
+                  className="w-28 px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
+                >
+                  Make Admin
+                </button>
+              )}
+              {user.role === 'admin' && (
+                <button
+                  onClick={() => handleRemoveAdmin(user.id)}
+                  className="w-28 px-2 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-xs"
+                >
+                  Remove Admin
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setSelectedUserId(user.id);
+                  setIsDeleteModalOpen(true);
+                }}
+                className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs"
+              >
+                <FaTrashAlt />
+              </button>
+            </>
+          )}
+          {user.id !== userId &&
+            userRole === 'admin' &&
+            user.role === 'teammember' && (
+              <>
+                <button
+                  onClick={() => handleMakeAdmin(user.id)}
+                  className="w-28 px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
+                >
+                  Make Admin
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedUserId(user.id);
+                    setIsDeleteModalOpen(true);
+                  }}
+                  className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs"
+                >
+                  <FaTrashAlt />
+                </button>
+              </>
+            )}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
       </div>
 
       <Link href="/profile">
