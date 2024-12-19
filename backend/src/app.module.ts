@@ -27,13 +27,11 @@ import { AppConfigService } from "./config/app-config.service";
     }),
     BullModule.forRootAsync({
       useFactory: async () => {
-        const redisUrl = process.env.REDIS_URL;
-        const { hostname: host, port } = new URL(redisUrl);
-console.log('redisurl',redisUrl,'\nhostname',host,'\npost',port)
-        return {
+        
+          return {
           redis: {
-            host,
-            port: port ? parseInt(port, 10) : 6379,
+            host:'red-cthqv2t6l47c738aoub0',
+            port: 6379,
           },
         };
       },

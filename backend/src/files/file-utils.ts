@@ -26,11 +26,13 @@ export async function extractImageText(file: Express.Multer.File): Promise<strin
     const filePath = path.join(BASE_PATH, 'uploads', file.filename);
     console.log('Extracting text from file at:', filePath);
 
-    // Read the image file synchronously
-    const imageBuffer = fs.readFileSync(filePath);
+    // Use Tesseract to recognize text from the image file
+    const result = await Tesseract.recognize(
+      filePath,
+      'eng',
+      { logger: (m) => console.log(m) } // Optional: log the progress
+    );
 
-    // Use Tesseract to recognize text from the image (pass image buffer instead of file path)
-    const result = await Tesseract.recognize(imageBuffer, 'eng');
     return result.data.text;
   } catch (error) {
     console.error('Error during OCR processing:', error);

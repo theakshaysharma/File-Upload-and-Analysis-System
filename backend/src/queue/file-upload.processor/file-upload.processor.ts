@@ -12,7 +12,7 @@ export class FileUploadProcessor implements OnModuleInit {
   constructor(private readonly fileService: FileService) {
     this.fileUploadQueue = new Queue('file-upload', {
       connection: {
-        host: 'localhost',
+        host: 'red-cthqv2t6l47c738aoub0',
         port: 6379,
       },
     });
