@@ -6,27 +6,9 @@ import { FileService } from "src/files/files.service";
 
 @Processor('file-upload')
 @Injectable()
-export class FileUploadProcessor implements OnModuleInit {
-  private fileUploadQueue: Queue;
-
-  constructor(private readonly fileService: FileService) {
-    this.fileUploadQueue = new Queue('file-upload', {
-      connection: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT,10) ?? 6379,
-      },
-    });
-  }
-
-  async onModuleInit() {
-    try {
-      console.log('Clearing the file-upload queue...');
-      await this.fileUploadQueue.drain();
-      console.log('Queue cleared successfully');
-    } catch (error) {
-      console.error(`Failed to clear the queue: ${error.message}`);
-    }
-  }
+export class FileUploadProcessor  {
+  
+  constructor(private readonly fileService: FileService) {}
 
   @Process('upload-file')
   async handleFileUpload(job: Job) {
